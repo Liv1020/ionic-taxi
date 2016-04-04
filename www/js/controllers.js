@@ -61,9 +61,7 @@ angular.module('starter.controllers', [])
     }
   };
 
-  $scope.settings = {
-    enableFriends: true
-  };
+  $scope.user = User.current();
 })
 
 .controller('LoginCtrl', function($scope, $rootScope, $ionicViewService, $state, User, $interval) {

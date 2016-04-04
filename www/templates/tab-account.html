@@ -1,9 +1,32 @@
 <ion-view view-title="个人中心">
   <ion-content>
     <ion-list>
-    <ion-toggle  ng-model="settings.enableFriends">
-        Enable Friends
-    </ion-toggle>
+      <a class="item item-avatar" href="#" ng-show="user">
+        <img src="img/anonymous.jpg">
+        <h2>{{user.get('mobilePhoneNumber')}}</h2>
+        <p>----</p>
+      </a>
+      <a class="item item-avatar item-icon-right" href="#/tab/login" ng-show="!user">
+        <img src="img/anonymous.jpg">
+        <h2>点击登录</h2>
+        <i class="icon ion-ios-arrow-right"></i>
+      </a>
+      <div class="item item-divider"></div>
+
+      <a class="item item-icon-right" href="#">
+        好评鼓励
+        <i class="icon ion-ios-arrow-right"></i>
+      </a>
+
+      <a class="item item-icon-right" href="#">
+        意见反馈
+        <i class="icon ion-ios-arrow-right"></i>
+      </a>
+
+      <a class="item item-icon-right" href="#">
+        联系我们
+        <i class="icon ion-ios-arrow-right"></i>
+      </a>
     </ion-list>
   </ion-content>
 </ion-view>
