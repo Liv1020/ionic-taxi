@@ -50,7 +50,7 @@ angular.module('starter.controllers', [])
   $scope.chat = Chats.get($stateParams.chatId);
 })
 
-.controller('AccountCtrl', function($scope, $state, $ionicViewService, User) {
+.controller('AccountCtrl', function($scope, $state, $ionicViewService, User, $rootScope) {
   $scope.goLogin = function(){
     if(User.isGuest()){
       $ionicViewService.nextViewOptions({
@@ -62,6 +62,11 @@ angular.module('starter.controllers', [])
   };
 
   $scope.user = User.current();
+
+  //如果广播了，更新用户信息
+  $rootScope.$on('user.login', function(){
+    $scope.user = User.current();
+  });
 })
 
 .controller('LoginCtrl', function($scope, $rootScope, $ionicViewService, $state, User, $interval) {
@@ -85,6 +90,8 @@ angular.module('starter.controllers', [])
   };
 
   $scope.sendSmsCode = function(e){
+    $scope.$emit('user.login');
+
     if($scope.sms.disabled){
       return;
     }
@@ -110,6 +117,9 @@ angular.module('starter.controllers', [])
         disableAnimate: true,
         disableBack: true
       });
+
+      $scope.$emit('user.login');
+
       $state.go('tab.account');
     }, function(error){
       $rootScope.quickNotify(error.message);
