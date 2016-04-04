@@ -5,6 +5,7 @@
     "ionic": "driftyco/ionic-bower#1.2.4"
   },
   "dependencies": {
-    "leancloud-jssdk.js": "leancloud-javascript-sdk#^0.6.4"
+    "leancloud-jssdk.js": "leancloud-javascript-sdk#^0.6.4",
+    "leancloud-push.js": "leancloud-push#^2.0.4"
   }
 }

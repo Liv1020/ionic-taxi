@@ -4,6 +4,13 @@ angular.module('starter.services', [])
   AV.initialize('VI3rH4c7sRo6B2klVgBbxEnv-gzGzoHsz', '76njleOWOsvGuoK0SAmihALq');
 })
 
+.factory('Config', function(){
+  return {
+    appId: 'VI3rH4c7sRo6B2klVgBbxEnv-gzGzoHsz',
+    appKey: '76njleOWOsvGuoK0SAmihALq'
+  };
+})
+
 .factory('Chats', function() {
   // Might use a resource here that returns a JSON array
 
@@ -103,6 +110,28 @@ angular.module('starter.services', [])
     },
     logout: function(){
       AV.User.logOut();
+    }
+  };
+})
+
+.factory('Push', function(Config){
+  var push = AV.push({
+    appId: Config.appId,
+    appKey: Config.appKey
+  });
+
+  return {
+    send: function(){
+      push.send({
+        channels: ['call-taxi'],
+        data: {alert: '我需要打车'}
+      }, function(result) {
+        if (result) {
+          console.log('推送成功发送');
+        } else {
+          console.log('error');
+        }
+      });
     }
   };
 });
