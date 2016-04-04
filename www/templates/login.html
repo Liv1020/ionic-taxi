@@ -1,0 +1,16 @@
+<ion-view view-title="个人中心">
+  <ion-content>
+    <div class="list list-inset">
+      <div class="item item-input">
+        <input type="text" placeholder="手机号码" ng-model="form.mobile">
+        <button class="button button-small" ng-click="sendSmsCode()">
+          {{sms.content}}
+        </button>
+      </div>
+      <div class="item item-input">
+        <input type="text" placeholder="验证码" ng-model="form.code">
+      </div>
+      <button class="button button-block button-assertive" type="submit" ng-click="login()">登录</button>
+    </div>
+  </ion-content>
+</ion-view>

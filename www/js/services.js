@@ -51,4 +51,58 @@ angular.module('starter.services', [])
       return null;
     }
   };
+})
+
+.factory('User', function($q) {
+  return {
+    current: function() {
+      return AV.User.current();
+    },
+    isGuest: function() {
+      if(AV.User.current()){
+        return false;
+      }else{
+        return true;
+      }
+    },
+    sendSmsCode: function(mobile){
+      var defer = $q.defer();
+      if(!mobile){
+        defer.reject({
+          code: 601,
+          message: '手机号码不能为空'
+        });
+        return defer.promise;
+      }
+
+      return AV.Cloud.requestSmsCode(mobile);
+    },
+    login: function(mobile, code) {
+      var defer = $q.defer();
+      if(!mobile){
+        defer.reject({
+          code: 601,
+          message: '手机号码不能为空'
+        });
+        return defer.promise;
+      }
+
+      if(!code){
+        defer.reject({
+          code: 601,
+          message: '验证码不能为空'
+        });
+        return defer.promise;
+      }
+
+      var user = new AV.User();
+      return user.signUpOrlogInWithMobilePhone({
+        mobilePhoneNumber: mobile,
+        smsCode: code
+      });
+    },
+    logout: function(){
+      AV.User.logOut();
+    }
+  };
 });
