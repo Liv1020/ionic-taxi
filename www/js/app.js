@@ -7,7 +7,7 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
-.run(function($ionicPlatform, $rootScope, $ionicLoading, $window, $ionicViewSwitcher, $ionicHistory, $state) {
+.run(function($ionicPlatform, $rootScope, $ionicLoading, $window, $ionicViewSwitcher, $ionicHistory, $state, User) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -23,6 +23,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
     navigator.geolocation.watchPosition(function(position) {
       User.setCoords(position.coords);
+      $rootScope.$broadcast('user.changeLocation');
     }, function(error) {
       $rootScope.quickNotify('code: ' + error.code + 'message: ' + error.message + '\n');
     });

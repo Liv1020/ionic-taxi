@@ -3,30 +3,32 @@ angular.module('starter.controllers', [])
 .controller('DashCtrl', function($scope, $rootScope, $ionicPlatform, Map, Travel, User, $ionicHistory) {
   var map = Map.createMap('map-container');
   $scope.user = User;
-  $scope.to = '';
+  $scope.order = {to: {name:''}, from: {}, price: 0};
 
-  //收听广播
+  //收听child广播
   $rootScope.$on('travel.selected.to', function(e, data){
-    $scope.to = data.address;
+    $scope.order.to = data;
+    $scope.order.from = User.getBd09Point();
+  });
+
+  //监听root广播
+  $scope.$on('user.changeLocation', function(){
+    User.setMarkerToBaiduMap(map);
   });
 
   $scope.create = function(){
-    Travel.create($scope.to).then(function(){
+    console.log($scope.order);
+    Travel.create($scope.order).then(function(order){
       //不能返回
       $ionicHistory.nextViewOptions({
         disableBack: true
       });
-      $rootScope.goTo('order', {id: '123'}, {}, 'forward');
+      $rootScope.goTo('order', {id: order.id}, {}, 'forward');
       $rootScope.quickNotify('我们正在努力帮您寻找司机');
     }, function(error){
       $rootScope.quickNotify(error.message);
     })
   };
-
-  //监听变化
-  $scope.$watch('user.getCoords()', function(){
-    User.setMarkerToBaiduMap(map);
-  });
 })
 
 .controller('OrderCtrl', function($scope, Map) {
@@ -129,20 +131,29 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('SearchCtrl', function($scope, $rootScope, Map) {
-  $scope.items = [];
+.controller('SearchCtrl', function($scope, $rootScope, Map, User) {
+  $scope.items = User.getUserPlaces();
+  $scope.form = {place: ''};
+
   $scope.search = function(){
-    Map.getPlaces().then(function(result){
+    Map.getPlaces($scope.form.place, '深圳').success(function(result){
       if(result.status == 0){
-        $scope.items = result.result;
+        $scope.items = result.results;
+      }else{
+        $rootScope.quickNotify(result.message);
       }
-    }, function(){
-      $rootScope.quickNotify('搜索失败');
     });
   };
 
-  $scope.selected = function(address){
-    $scope.$emit('travel.selected.to', {address: address});
+  $scope.reset = function(){
+    $scope.form.place = '';
+    $scope.items = User.getUserPlaces();
+  };
+
+  $scope.selected = function(place){
+    $scope.$emit('travel.selected.to', place);
+    User.addUserPlace(place);
+    $scope.reset();
     $rootScope.goBack();
   }
 });

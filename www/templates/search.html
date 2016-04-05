@@ -3,7 +3,7 @@
     <div class="bar bar-header item-input-inset">
       <label class="item-input-wrapper">
         <i class="icon ion-ios-search placeholder-icon"></i>
-        <input type="search" placeholder="搜索地点" id="input-map-search">
+        <input type="text" placeholder="搜索地点" ng-model="form.place" ng-keypress="search()">
       </label>
       <a class="button button-clear" href="#/tab/dash" nav-direction="back">
         取消
@@ -12,9 +12,9 @@
   </ion-nav-title>
   <ion-content>
     <ion-list>
-      <ion-item ng-repeat="item in items" ng-click="selected(item.name)">
-        <h2>Venkman</h2>
-        <p>Back off, man. I'm a scientist.</p>
+      <ion-item ng-repeat="item in items" ng-click="selected(item)">
+        <h2>{{item.name}}</h2>
+        <p>{{item.address}}</p>
       </ion-item>
     </ion-list>
   </ion-content>

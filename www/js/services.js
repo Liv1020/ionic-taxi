@@ -10,7 +10,8 @@ angular.module('starter.services', [])
     appKey: '76njleOWOsvGuoK0SAmihALq',
     bdMapAk: 'FpKZ2SwqtWLbcDsko96GGVZuUSZfL8ZE',
     bdMapApi: {
-      place: 'http://api.map.baidu.com/place/v2/suggestion'
+      place: 'http://api.map.baidu.com/place/v2/search',
+      geocoder: 'http://api.map.baidu.com/geocoder/v2/'
     }
   };
 })
@@ -64,8 +65,10 @@ angular.module('starter.services', [])
   };
 })
 
-.factory('User', function($q) {
+.factory('User', function($q, Map, LocalStorage) {
   var coords = {};
+  var bd09Point = {};
+  var bd09Location = {};
   var myPointMarker = null;
 
   return {
@@ -124,22 +127,40 @@ angular.module('starter.services', [])
     getCoords: function(){
       return coords;
     },
+    getBd09Point: function(){
+      return bd09Point;
+    },
+    getBd09Location: function(){
+      return bd09Location;
+    },
     setMarkerToBaiduMap: function(map){
-      var gpsPoint = new BMap.Point(coords.longitude, coords.latitude);
-      var convertor = new BMap.Convertor();
-      convertor.translate([gpsPoint], 1, 5, function(data){
-        if(data.status === 0) {
-          var point = data.points[0];
-          if(myPointMarker){
-            map.removeOverlay(myPointMarker);
-          }else{
-            map.centerAndZoom(point, 18);
-          }
-          var marker = new BMap.Marker(point);
-          map.addOverlay(marker);
-          myPointMarker = marker;
+      Map.gpsToBd09(coords.longitude, coords.latitude).then(function(point){
+        bd09Point = point;
+        if(myPointMarker){
+          map.removeOverlay(myPointMarker);
+        }else{
+          map.centerAndZoom(bd09Point, 18);
         }
-      })
+        var marker = new BMap.Marker(bd09Point);
+        map.addOverlay(marker);
+        myPointMarker = marker;
+      });
+    },
+    getUserPlaces: function(){
+      return LocalStorage.getObject('user.search', []);
+    },
+    addUserPlace: function(place){
+      var data = LocalStorage.getObject('user.search', []);
+      var valid = true;
+      data.forEach(function(value, index){
+        if(value.uid == place.uid){
+          valid = false;
+        }
+      });
+      if(valid){
+        data.push(place);
+        LocalStorage.setObject('user.search', data.reverse());
+      }
     }
   };
 })
@@ -167,38 +188,101 @@ angular.module('starter.services', [])
 })
 
 .factory('Travel', function(User, $q){
-  var order = null;
+  var Order = AV.Object.extend('Post');
+  var userOrder = null;
 
   return {
     has: function(){
-      return order ? true: false;
+      return userOrder ? true: false;
     },
     get: function(){
-      if(!order){
-        order = null;
+      if(!userOrder){
+        userOrder = new Order();
       }
-      return order;
+      return userOrder;
     },
-    create: function(to){
+    create: function(order){
       var defer = $q.defer();
-      defer.resolve('发送成功');
+      userOrder = new Order();
+      userOrder.set('to', order.to);
+      userOrder.set('from', order.from);
+      userOrder.set('price', order.price);
+      //userOrder.set('orderAt', new Date().toLocaleDateString());
+      userOrder.set('user', User.current());
+      userOrder.save().then(function(data) {
+        defer.resolve(data);
+      }, function(err) {
+        defer.reject(err);
+      });
+
       return defer.promise;
     }
   };
 })
 
-.factory('Map', function($http, Config){
+.factory('Map', function($http, Config, $q){
   return {
     createMap: function(id){
-      return new BMap.Map(id);
+      var map = new BMap.Map(id, {enableHighResolution: true});
+      map.disableDoubleClickZoom();
+      return map;
     },
     /**
      *
      * @param query
+     * @param region
      * @returns {HttpPromise}
      */
-    getPlaces: function(query){
-      return $http.get(Config.bdMapApi.place, {query: query, region: 131, output: 'json', ak: Config.bdMapAk});
+    getPlaces: function(query, region){
+      return $http.get(Config.bdMapApi.place, {params:{query: query, scope: 1, region: region, output: 'json', ak: Config.bdMapAk}});
+    },
+    getLocation: function(lng, lat){
+      return $http.get(Config.bdMapApi.geocoder, {params:{location: lat + ',' +lng, pois: 0, output: 'json', ak: Config.bdMapAk}});
+    },
+    gpsToBd09: function(longitude, latitude){
+      var defer = $q.defer();
+      var gpsPoint = new BMap.Point(longitude, latitude);
+      var convertor = new BMap.Convertor();
+      convertor.translate([gpsPoint], 1, 5, function(data){
+        if(data.status === 0) {
+          var point = data.points[0];
+          defer.resolve(point);
+        }else{
+          defer.reject({
+            code: -1,
+            message: '转换失败'
+          });
+        }
+      });
+
+      return defer.promise;
+    }
+  }
+})
+
+.factory('LocalStorage', function($window) {
+  var getPrefixKey = function (key) {
+    return 'Taxi.local.' + key;
+  };
+
+  return {
+    set: function(key, value) {
+      $window.localStorage[getPrefixKey(key)] = value;
+    },
+    get: function(key, defaultValue) {
+      return $window.localStorage[getPrefixKey(key)] || defaultValue;
+    },
+    setObject: function(key, value) {
+      $window.localStorage[getPrefixKey(key)] = JSON.stringify(value);
+    },
+    getObject: function(key, defaultValue) {
+      defaultValue = defaultValue ? defaultValue : {};
+      if($window.localStorage[getPrefixKey(key)]){
+        var data =  JSON.parse($window.localStorage[getPrefixKey(key)]);
+        return angular.extend(data, defaultValue);
+      }else{
+        return defaultValue;
+      }
     }
   }
 });
