@@ -3,10 +3,9 @@
     <div class="list list-inset">
       <a class="item item-input" href="#/search" nav-direction="forward">
         <i class="icon ion-search placeholder-icon"></i>
-        <input type="text" placeholder="您要去哪？" ng-model="travel.to">
-        <input type="hidden" ng-model="travel.from">
+        <input type="text" placeholder="您要去哪？" ng-model="to">
       </a>
-      <button class="button button-block button-assertive" type="submit">呼叫出租车</button>
+      <button class="button button-block button-assertive" ng-click="create()">呼叫出租车</button>
     </div>
     <div id="map-container" style="height: 100%"></div>
   </ion-content>

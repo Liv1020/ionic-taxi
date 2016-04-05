@@ -7,7 +7,7 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
-.run(function($ionicPlatform, $rootScope, $ionicLoading, $window) {
+.run(function($ionicPlatform, $rootScope, $ionicLoading, $window, $ionicViewSwitcher, $ionicHistory, $state) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -20,6 +20,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
     }
+
+    navigator.geolocation.watchPosition(function(position) {
+      User.setCoords(position.coords);
+    }, function(error) {
+      $rootScope.quickNotify('code: ' + error.code + 'message: ' + error.message + '\n');
+    });
   });
 
   /**
@@ -64,6 +70,26 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
       $rootScope.hide();
     }, 999);
   };
+
+  /**
+   * 动画跳转
+   * @param name
+   * @param params
+   * @param options
+   * @param direction
+   */
+  $rootScope.goTo = function(name, params, options, direction) {
+    direction && $ionicViewSwitcher.nextDirection(direction);
+    $state.go(name, params, options);
+  };
+
+  /**
+   * 动画返回
+   */
+  $rootScope.goBack = function() {
+    $ionicViewSwitcher.nextDirection('back');
+    $ionicHistory.goBack();
+  };
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
@@ -91,6 +117,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         controller: 'DashCtrl'
       }
     }
+  })
+
+  .state('order', {
+    url: '/order/:id',
+    templateUrl: 'templates/order.html',
+    controller: 'OrderCtrl'
   })
 
   .state('tab.find', {

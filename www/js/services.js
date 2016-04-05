@@ -61,6 +61,9 @@ angular.module('starter.services', [])
 })
 
 .factory('User', function($q) {
+  var coords = {};
+  var myPointMarker = null;
+
   return {
     current: function() {
       return AV.User.current();
@@ -110,6 +113,29 @@ angular.module('starter.services', [])
     },
     logout: function(){
       AV.User.logOut();
+    },
+    setCoords: function(obj){
+      coords = obj;
+    },
+    getCoords: function(){
+      return coords;
+    },
+    setMarkerToBaiduMap: function(map){
+      var gpsPoint = new BMap.Point(coords.longitude, coords.latitude);
+      var convertor = new BMap.Convertor();
+      convertor.translate([gpsPoint], 1, 5, function(data){
+        if(data.status === 0) {
+          var point = data.points[0];
+          if(myPointMarker){
+            map.removeOverlay(myPointMarker);
+          }else{
+            map.centerAndZoom(point, 18);
+          }
+          var marker = new BMap.Marker(point);
+          map.addOverlay(marker);
+          myPointMarker = marker;
+        }
+      })
     }
   };
 })
@@ -136,7 +162,7 @@ angular.module('starter.services', [])
   };
 })
 
-.factory('Travel', function(){
+.factory('Travel', function(User, $q){
   var order = null;
 
   return {
@@ -149,8 +175,18 @@ angular.module('starter.services', [])
       }
       return order;
     },
-    create: function(){
-
+    create: function(to){
+      var defer = $q.defer();
+      defer.resolve('发送成功');
+      return defer.promise;
     }
   };
+})
+
+.factory('Map', function(){
+  return {
+    createMap: function(id){
+      return new BMap.Map(id);
+    }
+  }
 });

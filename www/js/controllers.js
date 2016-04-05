@@ -1,34 +1,36 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope, $rootScope, $ionicPlatform) {
-  var map = new BMap.Map("map-container");
-  var myPointMarker = null;
+.controller('DashCtrl', function($scope, $rootScope, $ionicPlatform, Map, Travel, User, $ionicHistory) {
+  var map = Map.createMap('map-container');
+  $scope.user = User;
+  $scope.to = '';
 
-  var setUserGpsMark = function(lng, lat){
-    var gpsPoint = new BMap.Point(lng, lat);
-    var convertor = new BMap.Convertor();
-    convertor.translate([gpsPoint], 1, 5, function(data){
-      if(data.status === 0) {
-        var point = data.points[0];
-        if(myPointMarker){
-          map.removeOverlay(myPointMarker);
-        }else{
-          map.centerAndZoom(point, 18);
-        }
-        var marker = new BMap.Marker(point);
-        map.addOverlay(marker);
-        myPointMarker = marker;
-      }
+  //收听广播
+  $rootScope.$on('travel.selected.to', function(e, data){
+    $scope.to = data.address;
+  });
+
+  $scope.create = function(){
+    Travel.create($scope.to).then(function(){
+      //不能返回
+      $ionicHistory.nextViewOptions({
+        disableBack: true
+      });
+      $rootScope.goTo('order', {id: '123'}, {}, 'forward');
+      $rootScope.quickNotify('我们正在努力帮您寻找司机');
+    }, function(error){
+      $rootScope.quickNotify(error.message);
     })
   };
 
-  $ionicPlatform.ready(function() {
-    navigator.geolocation.watchPosition(function(position) {
-      setUserGpsMark(position.coords.longitude, position.coords.latitude);
-    }, function(error) {
-      $rootScope.quickNotify('code: ' + error.code + 'message: ' + error.message + '\n');
-    });
+  //监听变化
+  $scope.$watch('user.getCoords()', function(){
+    User.setMarkerToBaiduMap(map);
   });
+})
+
+.controller('OrderCtrl', function($scope, Map) {
+  var map = Map.createMap('order-map-container');
 })
 
 .controller('FindCtrl', function($scope, Chats) {
@@ -127,7 +129,8 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('SearchCtrl', function($scope, $ionicHistory, $ionicViewSwitcher) {
+.controller('SearchCtrl', function($scope, $rootScope) {
+
   $scope.items = [
     {
       name: '旭飞花园',
@@ -139,9 +142,8 @@ angular.module('starter.controllers', [])
     }
   ];
 
-  $scope.selected = function(value){
-    console.log(value);
-    $ionicViewSwitcher.nextDirection('back');
-    $ionicHistory.goBack();
+  $scope.selected = function(address){
+    $scope.$emit('travel.selected.to', {address: address});
+    $rootScope.goBack();
   }
 });
