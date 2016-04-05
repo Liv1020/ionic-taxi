@@ -139,8 +139,6 @@ angular.module('starter.controllers', [])
     Map.getPlaces($scope.form.place, '深圳').success(function(result){
       if(result.status == 0){
         $scope.items = result.results;
-      }else{
-        $rootScope.quickNotify(result.message);
       }
     });
   };
