@@ -7,7 +7,11 @@ angular.module('starter.services', [])
 .factory('Config', function(){
   return {
     appId: 'VI3rH4c7sRo6B2klVgBbxEnv-gzGzoHsz',
-    appKey: '76njleOWOsvGuoK0SAmihALq'
+    appKey: '76njleOWOsvGuoK0SAmihALq',
+    bdMapAk: 'FpKZ2SwqtWLbcDsko96GGVZuUSZfL8ZE',
+    bdMapApi: {
+      place: 'http://api.map.baidu.com/place/v2/suggestion'
+    }
   };
 })
 
@@ -183,10 +187,18 @@ angular.module('starter.services', [])
   };
 })
 
-.factory('Map', function(){
+.factory('Map', function($http, Config){
   return {
     createMap: function(id){
       return new BMap.Map(id);
+    },
+    /**
+     *
+     * @param query
+     * @returns {HttpPromise}
+     */
+    getPlaces: function(query){
+      return $http.get(Config.bdMapApi.place, {query: query, region: 131, output: 'json', ak: Config.bdMapAk});
     }
   }
 });

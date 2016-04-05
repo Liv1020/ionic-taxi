@@ -129,18 +129,17 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('SearchCtrl', function($scope, $rootScope) {
-
-  $scope.items = [
-    {
-      name: '旭飞花园',
-      des: '福田区八卦二路'
-    },
-    {
-      name: '旭飞花园',
-      des: '福田区八卦二路'
-    }
-  ];
+.controller('SearchCtrl', function($scope, $rootScope, Map) {
+  $scope.items = [];
+  $scope.search = function(){
+    Map.getPlaces().then(function(result){
+      if(result.status == 0){
+        $scope.items = result.result;
+      }
+    }, function(){
+      $rootScope.quickNotify('搜索失败');
+    });
+  };
 
   $scope.selected = function(address){
     $scope.$emit('travel.selected.to', {address: address});
