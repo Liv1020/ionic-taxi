@@ -134,4 +134,23 @@ angular.module('starter.services', [])
       });
     }
   };
+})
+
+.factory('Travel', function(){
+  var order = null;
+
+  return {
+    has: function(){
+      return order ? true: false;
+    },
+    get: function(){
+      if(!order){
+        order = null;
+      }
+      return order;
+    },
+    create: function(){
+
+    }
+  };
 });

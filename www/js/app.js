@@ -131,6 +131,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         controller: 'LoginCtrl'
       }
     }
+  })
+
+  .state('search', {
+    url: '/search',
+    templateUrl: 'templates/search.html',
+    controller: 'SearchCtrl'
   });
 
   // if none of the above states are matched, use this as the fallback

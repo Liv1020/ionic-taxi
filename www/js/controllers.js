@@ -125,4 +125,23 @@ angular.module('starter.controllers', [])
       $rootScope.quickNotify(error.message);
     });
   }
+})
+
+.controller('SearchCtrl', function($scope, $ionicHistory, $ionicViewSwitcher) {
+  $scope.items = [
+    {
+      name: '旭飞花园',
+      des: '福田区八卦二路'
+    },
+    {
+      name: '旭飞花园',
+      des: '福田区八卦二路'
+    }
+  ];
+
+  $scope.selected = function(value){
+    console.log(value);
+    $ionicViewSwitcher.nextDirection('back');
+    $ionicHistory.goBack();
+  }
 });

@@ -1,0 +1,21 @@
+<ion-view>
+  <ion-nav-title>
+    <div class="bar bar-header item-input-inset">
+      <label class="item-input-wrapper">
+        <i class="icon ion-ios-search placeholder-icon"></i>
+        <input type="search" placeholder="搜索地点">
+      </label>
+      <a class="button button-clear" href="#/tab/dash" nav-direction="back">
+        取消
+      </a>
+    </div>
+  </ion-nav-title>
+  <ion-content>
+    <ion-list>
+      <ion-item ng-repeat="item in items" ng-click="selected(item.name)">
+        <h2>Venkman</h2>
+        <p>Back off, man. I'm a scientist.</p>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>
