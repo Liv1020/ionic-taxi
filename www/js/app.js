@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
+angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', 'templates'])
 
 .run(function($ionicPlatform, $rootScope, $ionicLoading, $window, $ionicViewSwitcher, $ionicHistory, $state, User) {
   $ionicPlatform.ready(function() {
@@ -93,7 +93,9 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
   };
 })
 
-.config(function($stateProvider, $urlRouterProvider) {
+.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
+  //优化：使用原生滚动
+  $ionicConfigProvider.scrolling.jsScrolling(false);
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
