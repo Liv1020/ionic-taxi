@@ -143,7 +143,9 @@ angular.module('starter.controllers', [])
 })
 
 .controller('SearchCtrl', function($scope, $rootScope, Map, User) {
-  $scope.items = User.getUserPlaces();
+  $scope.$on('$ionicView.beforeEnter', function(){
+    $scope.items = User.getUserPlaces();
+  });
   $scope.form = {place: ''};
 
   $scope.search = function(){
