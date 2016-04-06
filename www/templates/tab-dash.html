@@ -3,7 +3,7 @@
     <div class="list list-inset" style="margin-bottom: 0;">
       <a class="item item-input" href="#/search" nav-direction="forward">
         <i class="icon ion-search placeholder-icon"></i>
-        <input type="text" placeholder="您要去哪？" ng-bind="order.to.name">
+        <input type="text" class="cloned-text-input" placeholder="您要去哪？" ng-model="order.to.name" readonly>
       </a>
       <button class="button button-block button-assertive" ng-click="create()">呼叫出租车</button>
     </div>
