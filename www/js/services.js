@@ -203,6 +203,15 @@ angular.module('starter.services', [])
     },
     create: function(order){
       var defer = $q.defer();
+
+      if(!order.to.name){
+        defer.reject({
+          code: 601,
+          message: '目的地不能为空'
+        });
+        return defer.promise;
+      }
+
       userOrder = new Order();
       userOrder.set('to', order.to);
       userOrder.set('from', order.from);

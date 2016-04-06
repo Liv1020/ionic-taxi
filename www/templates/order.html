@@ -1,5 +1,13 @@
 <ion-view view-title="正在寻找出租车">
+  <ion-nav-buttons side="right">
+    <button class="button button-clear" ng-click="cancel()">
+      取消订单
+    </button>
+  </ion-nav-buttons>
   <ion-content scroll="false">
+    <div class="list list-inset">
+      正在寻找出租车
+    </div>
     <div id="order-map-container" style="height: 100%"></div>
   </ion-content>
 </ion-view>

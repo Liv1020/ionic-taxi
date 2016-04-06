@@ -8,6 +8,8 @@ angular.module('starter.controllers', [])
   //收听child广播
   $rootScope.$on('travel.selected.to', function(e, data){
     $scope.order.to = data;
+    //删除key
+    delete $scope.order.to.$$hashKey;
     $scope.order.from = User.getBd09Point();
   });
 
@@ -23,7 +25,7 @@ angular.module('starter.controllers', [])
       $ionicHistory.nextViewOptions({
         disableBack: true
       });
-      $rootScope.goTo('order', {id: order.id}, {}, 'forward');
+      $rootScope.goTo('order', {id: order.id}, {reload: true}, 'forward');
       $rootScope.quickNotify('我们正在努力帮您寻找司机');
     }, function(error){
       $rootScope.quickNotify(error.message);
@@ -31,8 +33,17 @@ angular.module('starter.controllers', [])
   };
 })
 
-.controller('OrderCtrl', function($scope, Map) {
+.controller('OrderCtrl', function($scope, Map, User, $rootScope) {
   var map = Map.createMap('order-map-container');
+
+  //监听root广播
+  $scope.$on('user.changeLocation', function(){
+    User.setMarkerToBaiduMap(map);
+  });
+
+  $scope.cancel = function(){
+    $rootScope.goTo('tab.dash', {}, {reload: true}, 'back');
+  }
 })
 
 .controller('FindCtrl', function($scope, Chats) {
