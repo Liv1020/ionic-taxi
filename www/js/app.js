@@ -93,9 +93,15 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
   };
 })
 
-.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
+.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider, $logProvider, $compileProvider, $animateProvider) {
   //优化：使用原生滚动
   $ionicConfigProvider.scrolling.jsScrolling(false);
+  //启用动画
+  $animateProvider.classNameFilter(/\banimated\b/);
+  //最大缓存
+  $ionicConfigProvider.views.maxCache(5);
+  $logProvider.debugEnabled(false);
+  $compileProvider.debugInfoEnabled(false);
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
@@ -123,6 +129,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
   })
 
   .state('order', {
+    cache: false,
     url: '/order/:id',
     templateUrl: 'templates/order.html',
     controller: 'OrderCtrl'
@@ -139,6 +146,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
   })
 
   .state('tab.find-detail', {
+    cache: false,
     url: '/find/:chatId',
     views: {
       'tab-chats': {
